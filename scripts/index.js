@@ -2,26 +2,36 @@
 const cardTemplate = document.querySelector('#card-template').content;
 
 // @todo: DOM узлы
-const list = document.querySelector('.places__list');
+const cardsContainer = document.querySelector('.places__list');
 const addButton = document.querySelector('.profile__add-button');
 // @todo: Функция создания карточки
-function addCard(name, link) {
+function createCard(cardData) {
 	const cardElement = cardTemplate.querySelector('.card').cloneNode(true);
-	cardElement.querySelector('.card__title').textContent = name;
-	cardElement.querySelector('.card__image').src = link;
+	const likeButton = cardElement.querySelector('.card__like-button');
+	cardElement.querySelector('.card__title').textContent = cardData.name;
+	cardElement.querySelector('.card__image').src = cardData.link;
+	cardElement.querySelector('.card__image').alt = cardData.name;
 
-	cardElement.querySelector('.card__delete-button').addEventListener('click', removeCard);
+	cardElement.querySelector('.card__delete-button').addEventListener('click', () => {
+		removeCard(cardElement);
+	});
 
-	list.append(cardElement);
+	likeButton.addEventListener('click', () => {
+		likeButton.classList.toggle('card__like-button_is-active');
+	});
+
+	return cardElement;
 }
 
-function removeCard(evt) {
-	evt.target.closest('.card').remove();
+function removeCard(card) {
+	card.remove();
 }
 
-// for (let i = 0; i < initialCards.length; i += 1) {
-// 	addCard(initialCards[i].name, initialCards[i].link);
-// }
+function addCard(data) {
+	const card = createCard(data);
+	cardsContainer.append(card);
+}
+
 initialCards.forEach(element => {
-	addCard(element.name, element.link);
+	addCard(element);
 });

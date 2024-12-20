@@ -17,7 +17,7 @@ function createCard(cardData) {
 	});
 
 	likeButton.addEventListener('click', () => {
-		likeButton.classList.toggle('card__like-button_is-active');
+		toggleLike(likeButton);
 	});
 
 	return cardElement;
@@ -25,6 +25,10 @@ function createCard(cardData) {
 
 function removeCard(card) {
 	card.remove();
+}
+
+function toggleLike(button) {
+	button.classList.toggle('card__like-button_is-active');
 }
 
 function addCard(data) {

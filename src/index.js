@@ -1,7 +1,7 @@
+import { initialCards } from './cards.js';
 import './pages/index.css'; // добавьте импорт главного файла стилей
 import { openPopap, closePopap, closePopapButton, escHandler, overlayHandler } from './modules/popap.js';
-import { createCard } from './modules/card.js';
-
+import { createCard, addCard } from './modules/card.js';
 //Редактирование профиля(кнопка,форма)
 import {
 	profileEditButton,
@@ -12,11 +12,10 @@ import {
 	nameInput,
 	jobInput,
 } from './modules/elements.js';
-import { handleFormSubmit } from './modules/EditProfile.js';
+import { handleEditProfileFormSubmit } from './modules/EditProfile.js';
 
 profileEditButton.addEventListener('click', function () {
 	openPopap(popupTypeEdit);
-	document.addEventListener('keydown', escHandler);
 	nameInput.value = ptofileTitle.textContent;
 	jobInput.value = profileDescription.textContent;
 });
@@ -26,7 +25,7 @@ popupTypeEdit.addEventListener('click', function (evt) {
 	overlayHandler(evt, popupTypeEdit);
 });
 
-editProfileForm.addEventListener('submit', handleFormSubmit);
+editProfileForm.addEventListener('submit', handleEditProfileFormSubmit);
 
 //Создание карточки,форма и взаимодействме с карточкой
 
@@ -39,11 +38,10 @@ import {
 	placeLinkInput,
 } from './modules/elements.js';
 
-import { validateAndSubmit } from './modules/newPlace.js';
+import { handleNewCardFormSubmit } from './modules/newPlace.js';
 
 popapAddCardButton.addEventListener('click', function () {
 	openPopap(popapAddCard);
-	document.addEventListener('keydown', escHandler);
 });
 
 popapAddCard.addEventListener('click', function (evt) {
@@ -51,6 +49,19 @@ popapAddCard.addEventListener('click', function (evt) {
 	closePopapButton(evt, popapAddCard);
 });
 
-newPlaceForm.addEventListener('submit', validateAndSubmit);
+newPlaceForm.addEventListener('submit', handleNewCardFormSubmit);
 
-//====================================================
+
+
+//Взаимодействие с карточкой
+import { popupTypeImage, popupImage, popupCaption } from './modules/elements.js';
+
+popupTypeImage.addEventListener('click', function (evt) {
+	closePopapButton(evt, popupTypeImage);
+	overlayHandler(evt, popupTypeImage);
+});
+
+
+initialCards.forEach(element => {
+	addCard(element);
+});

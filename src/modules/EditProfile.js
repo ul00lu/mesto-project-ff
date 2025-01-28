@@ -3,7 +3,7 @@ import { popupTypeEdit, ptofileTitle, profileDescription, nameInput, jobInput } 
 import { closePopap } from './popap.js';
 
 
-export function handleFormSubmit(evt) {
+export function handleEditProfileFormSubmit(evt) {
 	evt.preventDefault();
 	const valueNameInput = nameInput.value;
 	const valueJobInput = jobInput.value;

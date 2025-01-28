@@ -1,11 +1,16 @@
 import { cardsContainer, placeNameInput, placeLinkInput, popapAddCard } from './elements.js';
-import { createCard } from './card.js';
+import { createCard, addCard } from './card.js';
 import { closePopap } from './popap.js';
-export function validateAndSubmit(evt) {
+export function handleNewCardFormSubmit(evt) {
 	evt.preventDefault();
-	const card = createCard(placeNameInput, placeLinkInput);
-	cardsContainer.prepend(card);
-  closePopap(popapAddCard);
+	const placeName = placeNameInput.value;
+	const placeLink = placeLinkInput.value;
+	const card = {
+		name: placeName,
+		link: placeLink,
+	};
+	addCard(card);
+	closePopap(popapAddCard);
 	placeNameInput.value = '';
 	placeLinkInput.value = '';
 }

@@ -1,7 +1,6 @@
 import { initialCards } from './cards.js';
 import './pages/index.css'; // добавьте импорт главного файла стилей
 import { openPopap, closePopap, closePopapButton, escHandler, overlayHandler } from './modules/popap.js';
-import { createCard, addCard } from './modules/card.js';
 //Редактирование профиля(кнопка,форма)
 import {
 	profileEditButton,
@@ -51,16 +50,14 @@ popapAddCard.addEventListener('click', function (evt) {
 
 newPlaceForm.addEventListener('submit', handleNewCardFormSubmit);
 
-
-
 //Взаимодействие с карточкой
 import { popupTypeImage, popupImage, popupCaption } from './modules/elements.js';
+import { addCard } from './modules/addCard.js';
 
 popupTypeImage.addEventListener('click', function (evt) {
 	closePopapButton(evt, popupTypeImage);
 	overlayHandler(evt, popupTypeImage);
 });
-
 
 initialCards.forEach(element => {
 	addCard(element);

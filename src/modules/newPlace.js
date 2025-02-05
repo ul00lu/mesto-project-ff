@@ -1,6 +1,6 @@
 import { cardsContainer, placeNameInput, placeLinkInput, popapAddCard } from './elements.js';
-import { createCard, addCard } from './card.js';
 import { closePopap } from './popap.js';
+import { addCard } from './addCard.js';
 export function handleNewCardFormSubmit(evt) {
 	evt.preventDefault();
 	const placeName = placeNameInput.value;

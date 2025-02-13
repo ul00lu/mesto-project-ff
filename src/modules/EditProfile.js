@@ -1,13 +1,31 @@
-import { popupTypeEdit, ptofileTitle, profileDescription, nameInput, jobInput } from './elements.js';
+import {
+	popupTypeEdit,
+	ptofileTitle,
+	profileDescription,
+	nameInput,
+	jobInput,
+	editProfileFormButton,
+} from './elements.js';
 
-import { closePopap } from './popap.js';
+import { closePopap,buttonLoading } from './popap.js';
 
+import { patchUserInfo } from './api.js';
 
 export function handleEditProfileFormSubmit(evt) {
 	evt.preventDefault();
 	const valueNameInput = nameInput.value;
 	const valueJobInput = jobInput.value;
-	ptofileTitle.textContent = valueNameInput;
-	profileDescription.textContent = valueJobInput;
-	closePopap(popupTypeEdit);
+	buttonLoading(editProfileFormButton,true);
+	patchUserInfo(valueNameInput, valueJobInput)
+		.then(data => {
+			ptofileTitle.textContent = data.name;
+			profileDescription.textContent = data.about;
+			closePopap(popupTypeEdit);
+		})
+		.catch(error => {
+			console.error('Ошибка при обновлении данных:', error);
+		})
+		.finally(() => {
+			buttonLoading(editProfileFormButton, false);
+		});
 }

@@ -4,7 +4,6 @@ export function openPopap(popap) {
 	document.addEventListener('keydown', escHandler);
 }
 
-
 export function closePopap(popap) {
 	popap.classList.add('popup_is-animated');
 	popap.classList.remove('popup_is-opened');
@@ -16,7 +15,6 @@ export function closePopapButton(evt, popap) {
 		closePopap(popap);
 	}
 }
-
 
 export function escHandler(evt) {
 	if (evt.key === 'Escape') {
@@ -33,3 +31,15 @@ export function overlayHandler(evt, popap) {
 		closePopap(popap);
 	}
 }
+
+export const buttonLoading = (button, isloading) => {
+	if (isloading) {
+		button.classList.add('popup__button_disabled');
+		button.textContent = 'Сохранение...';
+		button.disabled = true;
+	} else {
+		button.textContent = 'Сохранить';
+		button.disabled = false;
+		button.classList.remove('popup__button_disabled');
+	}
+};

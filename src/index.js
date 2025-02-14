@@ -1,33 +1,87 @@
 import './pages/index.css';
-import { openPopap, closePopap, closePopapButton, escHandler, overlayHandler } from './modules/popap.js';
+import {
+	profileEditButton,
+	editProfileForm,
+	profileImage,
+	popapAddCardButton,
+	popapAddCard,
+	cardsContainer,
+	newPlaceForm,
+	placeNameInput,
+	placeLinkInput,
+	popapAvatr,
+	formAvatar,
+	imageAvatarInput,
+	popupTypeImage,
+	popupImage,
+	popupCaption,
+	popupTypeEdit,
+	ptofileTitle,
+	profileDescription,
+	nameInput,
+	jobInput,
+	editProfileFormButton,
+	formAvatarButton,
+	newPlaceFormButton,
+} from './modules/elements.js';
+import { getUserInfo, getInitialCards, patchAvatarProfile, postNewCard, patchUserInfo } from './modules/api.js';
+import { openPopap, closePopap, escHandler, closePopapHandler } from './modules/popap.js';
+import { enableValidation, clearValidation, toggleButtonState } from './modules/validation.js';
+import { createCard, removeCard, toggleLike } from './modules/card.js';
+import { buttonLoading } from './modules/utils.js';
+// ===================
+
+// ==============
+
+// Добавление крточки
+function addCard(data, userId) {
+	const card = createCard(data, userId, removeCard, toggleLike, openImagePopup);
+	cardsContainer.prepend(card);
+}
+
+// Открытие картинки карточки
+function openImagePopup(evt) {
+	const cardImage = evt.target;
+	const cardDescription = cardImage.closest('.card').querySelector('.card__title');
+	openPopap(popupTypeImage);
+	popupImage.src = cardImage.src;
+	popupImage.alt = cardImage.alt;
+	popupCaption.textContent = cardDescription.textContent;
+}
 
 // Запросы
-import { getUserInfo, getInitialCards } from './modules/api.js';
-
 Promise.all([getUserInfo(), getInitialCards()])
 	.then(([dataProfile, dataCards]) => {
+		const userId = dataProfile._id;
 		ptofileTitle.textContent = dataProfile.name;
 		profileDescription.textContent = dataProfile.about;
 		profileImage.style.backgroundImage = `url(${dataProfile.avatar})`;
 
 		dataCards.forEach(cardElement => {
-			addCard(cardElement);
+			addCard(cardElement, userId);
 		});
 	})
 	.catch(err => console.log(`Ошибка: ${err}`));
 
 //Редактирование профиля(кнопка,форма)
-import {
-	profileEditButton,
-	popupTypeEdit,
-	editProfileForm,
-	ptofileTitle,
-	profileImage,
-	profileDescription,
-	nameInput,
-	jobInput,
-} from './modules/elements.js';
-import { handleEditProfileFormSubmit } from './modules/EditProfile.js';
+function handleEditProfileFormSubmit(evt) {
+	evt.preventDefault();
+	const valueNameInput = nameInput.value;
+	const valueJobInput = jobInput.value;
+	buttonLoading(editProfileFormButton, true);
+	patchUserInfo(valueNameInput, valueJobInput)
+		.then(data => {
+			ptofileTitle.textContent = data.name;
+			profileDescription.textContent = data.about;
+			closePopap(popupTypeEdit);
+		})
+		.catch(error => {
+			console.error('Ошибка при обновлении данных:', error);
+		})
+		.finally(() => {
+			buttonLoading(editProfileFormButton, false);
+		});
+}
 
 profileEditButton.addEventListener('click', function () {
 	openPopap(popupTypeEdit);
@@ -38,46 +92,65 @@ profileEditButton.addEventListener('click', function () {
 });
 
 popupTypeEdit.addEventListener('click', function (evt) {
-	closePopapButton(evt, popupTypeEdit);
-	overlayHandler(evt, popupTypeEdit);
+	closePopapHandler(evt, popupTypeEdit);
 });
 
 editProfileForm.addEventListener('submit', handleEditProfileFormSubmit);
 
 //Создание карточки,форма и взаимодействме с карточкой
-import {
-	popapAddCardButton,
-	popapAddCard,
-	cardsContainer,
-	newPlaceForm,
-	placeNameInput,
-	placeLinkInput,
-} from './modules/elements.js';
+function handleNewCardFormSubmit(evt) {
+	evt.preventDefault();
+	const placeName = placeNameInput.value;
+	const placeLink = placeLinkInput.value;
 
-import { handleNewCardFormSubmit } from './modules/newPlace.js';
+	buttonLoading(newPlaceFormButton, true);
+	postNewCard(placeName, placeLink)
+		.then(data => {
+			addCard(data, data.owner._id);
+			closePopap(popapAddCard);
+			placeNameInput.value = '';
+			placeLinkInput.value = '';
+
+			clearValidation(newPlaceForm, validationConfig);
+		})
+		.catch(err => console.error(`Ошибка запроса: ${err}`))
+		.finally(() => {
+			buttonLoading(newPlaceFormButton, false);
+		});
+}
 
 popapAddCardButton.addEventListener('click', function () {
 	openPopap(popapAddCard);
-
-	placeNameInput.value = '';
-	placeLinkInput.value = '';
-
-	clearValidation(newPlaceForm, validationConfig);
+	toggleButtonState([placeNameInput, placeLinkInput], newPlaceFormButton, validationConfig);
 });
 
 popapAddCard.addEventListener('click', function (evt) {
-	overlayHandler(evt, popapAddCard);
-	closePopapButton(evt, popapAddCard);
+	closePopapHandler(evt, popapAddCard);
 });
 
 newPlaceForm.addEventListener('submit', evt => {
 	handleNewCardFormSubmit(evt);
 });
 
-import { popapAvatr, formAvatar, imageAvatarInput } from './modules/elements.js';
-import { handleAvatarUpdate } from './modules/avatarImage.js';
-
 //Аватар профиля
+function handleAvatarUpdate(evt) {
+	evt.preventDefault();
+	const avatarLink = imageAvatarInput.value;
+
+	buttonLoading(formAvatarButton, true);
+	patchAvatarProfile(avatarLink)
+		.then(data => {
+			profileImage.style.backgroundImage = `url('${data.avatar}')`;
+			closePopap(popapAvatr);
+		})
+		.catch(err => {
+			console.error('Ошибка при обновлении аватара:', err);
+		})
+		.finally(() => {
+			buttonLoading(formAvatarButton, false);
+		});
+}
+
 profileImage.addEventListener('click', () => {
 	openPopap(popapAvatr);
 	clearValidation(formAvatar, validationConfig);
@@ -85,30 +158,17 @@ profileImage.addEventListener('click', () => {
 });
 
 popapAvatr.addEventListener('click', function (evt) {
-	closePopapButton(evt, popapAvatr);
-	overlayHandler(evt, popapAvatr);
+	closePopapHandler(evt, popapAvatr);
 });
 
 formAvatar.addEventListener('submit', handleAvatarUpdate);
 
 //Взаимодействие с карточкой
-import { popupTypeImage, popupImage, popupCaption } from './modules/elements.js';
-import { addCard } from './modules/addCard.js';
-
 popupTypeImage.addEventListener('click', function (evt) {
-	closePopapButton(evt, popupTypeImage);
-	overlayHandler(evt, popupTypeImage);
+	closePopapHandler(evt, popupTypeImage);
 });
 
 // Валидация всех форм
-import {
-	isValid,
-	showInputError,
-	hideInputError,
-	setEventListeners,
-	enableValidation,
-	toggleButtonState,
-} from './modules/validation.js';
 
 const validationConfig = {
 	formSelector: '.popup__form',
@@ -120,14 +180,3 @@ const validationConfig = {
 };
 
 enableValidation(validationConfig);
-
-function clearValidation(formElement, validationConfig) {
-	const inputList = Array.from(formElement.querySelectorAll(validationConfig.inputSelector));
-	const buttonElement = formElement.querySelector(validationConfig.submitButtonSelector);
-	inputList.forEach(inputElement => {
-		inputElement.setCustomValidity('');
-		hideInputError(formElement, inputElement, validationConfig);
-	});
-
-	toggleButtonState(inputList, buttonElement, validationConfig);
-}

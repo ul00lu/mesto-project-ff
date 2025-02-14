@@ -1,6 +1,6 @@
-import { cardTemplate, popupTypeImage, popupImage, popupCaption, cardsContainer } from './elements';
+import { cardTemplate } from './elements';
 import { deleteCard, dislikeCard, likeCard } from './api';
-export function createCard(cardData, removeCard, toggleLike, openImagePopup) {
+export function createCard(cardData, userId, removeCard, toggleLike, openImagePopup) {
 	const cardElement = cardTemplate.querySelector('.card').cloneNode(true);
 	const likeButton = cardElement.querySelector('.card__like-button');
 	const likeCount = cardElement.querySelector('.card__like-count');
@@ -15,14 +15,14 @@ export function createCard(cardData, removeCard, toggleLike, openImagePopup) {
 
 	// Проверяем, лайкал ли пользователь карточку
 	const isLiked = cardData.likes.some(user => {
-		return user._id === '92330311a7f39781c855f973';
+		return user._id === userId;
 	});
 
 	if (isLiked) {
 		likeButton.classList.add('card__like-button_is-active');
 	}
 
-	if (cardData.owner && cardData.owner._id !== '92330311a7f39781c855f973') {
+	if (cardData.owner && cardData.owner._id !== userId) {
 		delateButton.style.display = 'none';
 	} else {
 		delateButton.addEventListener('click', evt => {

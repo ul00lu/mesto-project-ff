@@ -21,8 +21,9 @@ export const showInputError = (formElement, inputElement, errorMessage, validati
 export const hideInputError = (formElement, inputElement, validationConfig) => {
 	const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
 	errorElement.textContent = '';
+	inputElement.setCustomValidity('');
 	errorElement.classList.remove(validationConfig.errorClass);
-	inputElement.classList.remove(validationConfig.inputErrorClass); 
+	inputElement.classList.remove(validationConfig.inputErrorClass);
 };
 
 export const hasInvalidInput = inputList => {
@@ -33,11 +34,9 @@ export const hasInvalidInput = inputList => {
 
 export const toggleButtonState = (inputList, buttonElement, validationConfig) => {
 	if (hasInvalidInput(inputList)) {
-	
 		buttonElement.disabled = true;
 		buttonElement.classList.add(validationConfig.inactiveButtonClass);
 	} else {
-		
 		buttonElement.disabled = false;
 		buttonElement.classList.remove(validationConfig.inactiveButtonClass);
 	}
@@ -61,3 +60,14 @@ export const enableValidation = validationConfig => {
 		setEventListeners(formElement, validationConfig);
 	});
 };
+
+export function clearValidation(formElement, validationConfig) {
+	const inputList = Array.from(formElement.querySelectorAll(validationConfig.inputSelector));
+	const buttonElement = formElement.querySelector(validationConfig.submitButtonSelector);
+	inputList.forEach(inputElement => {
+		inputElement.setCustomValidity('');
+		hideInputError(formElement, inputElement, validationConfig);
+	});
+
+	toggleButtonState(inputList, buttonElement, validationConfig);
+}

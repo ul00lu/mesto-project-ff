@@ -10,11 +10,6 @@ export function closePopap(popap) {
 	document.removeEventListener('keydown', escHandler);
 }
 
-export function closePopapButton(evt, popap) {
-	if (evt.target.classList.contains('popup__close')) {
-		closePopap(popap);
-	}
-}
 
 export function escHandler(evt) {
 	if (evt.key === 'Escape') {
@@ -26,20 +21,10 @@ export function escHandler(evt) {
 	}
 }
 
-export function overlayHandler(evt, popap) {
-	if (evt.target.classList.contains('popup')) {
+export function closePopapHandler(evt, popap) {
+	if (evt.target.classList.contains('popup__close') || evt.target.classList.contains('popup')) {
 		closePopap(popap);
 	}
 }
 
-export const buttonLoading = (button, isloading) => {
-	if (isloading) {
-		button.classList.add('popup__button_disabled');
-		button.textContent = 'Сохранение...';
-		button.disabled = true;
-	} else {
-		button.textContent = 'Сохранить';
-		button.disabled = false;
-		button.classList.remove('popup__button_disabled');
-	}
-};
+
